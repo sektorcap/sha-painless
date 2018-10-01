@@ -37,19 +37,22 @@ byte[] digest(byte[] data, byte[] block, int[] words) {
   int[] hs = HS();
 
   for (int i = 0; i < padded.length / 64; ++i) {
-      int[] registers = HS();
-      System.arraycopy(padded, 64 * i, block, 0, 64);
+    int[] registers = new int[8];
+    for (int k = 0; k < 8; ++k)
+      registers[k] = hs[k];
 
-      setupWords(block, words);
-      int[] ks = KS();
+    System.arraycopy(padded, 64 * i, block, 0, 64);
 
-      for (int j = 0; j < 64; ++j) {
-          iterate(registers, words, j, ks);
-      }
+    setupWords(block, words);
+    int[] ks = KS();
 
-      for (int j = 0; j < 8; ++j) {
-          hs[j] += registers[j];
-      }
+    for (int j = 0; j < 64; ++j) {
+        iterate(registers, words, j, ks);
+    }
+
+    for (int j = 0; j < 8; ++j) {
+        hs[j] += registers[j];
+    }
   }
   byte[] hash = new byte[32];
   for (int i = 0; i < 8; i++) {
