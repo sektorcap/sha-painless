@@ -3,7 +3,10 @@ byte[] digest(byte[] x) {
   int i;
 
   for(i = 0; i < x.length; i++) {
-    blks[i >> 2] |= x[i] << (24 - (i % 4) * 8);
+    int shiftLeftBits = 24 - (i % 4) * 8;
+    int mask = (255 << shiftLeftBits);
+    int value = x[i] << shiftLeftBits;
+    blks[i >> 2] |= value & mask;
   }
 
   blks[i >> 2] |= 0x80 << (24 - (i % 4) * 8);
